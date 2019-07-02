@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" type="text/css" href="ui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="ui/themes/icon.css">
+<script type="text/javascript" src="ui/jquery.min.js"></script>
+<script type="text/javascript">
+	
+	function regist(){
+		let formData = $('#formDlg').serialize();
+		$.ajax({
+			url:'user/add.action',
+			data:formData,
+			contentType : "text/html;charset=utf-8",
+			success:function(message){
+				alert(message);
+			}
+		});
+	}
+	
+	function login(){
+		let formData = $('#formDlg').serialize();
+		$.ajax({
+			url:'user/login.action',
+			data:formData,
+			contentType : "text/html;charset=utf-8",
+			success:function(message){
+				alert(message);
+			}
+		});
+	}
+</script>
+</head>
+<body>
+
+<h1>这是各页面</h1>
+<form id="formDlg">
+	<table>
+		<tr>
+			<td>用户名</td>
+			<td><input type="text" name="username">
+		</tr>
+		<tr>
+			<td>密码</td>
+			<td><input type="password" name="password">
+		</tr>
+		<tr>
+			<td>年龄</td>
+			<td><input type="text" name="age">
+		</tr>
+		<tr>
+			<td>性别</td>
+			<td><input type="radio" name="sex" value="0">男 <input type="radio" name="sex" value="1">女
+		</tr>
+		<tr>
+			<td>地址</td>
+			<td><input type="text" name="address">
+		</tr>
+		<tr>
+			<td><input type="button" value="注册" onclick="regist()">
+			<td><input type="button" value="登录" onclick="login()">
+		</tr>
+	</table>
+</form>
+</body>
+</html>

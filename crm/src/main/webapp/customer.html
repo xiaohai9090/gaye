@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>客户信息列表</title>
+<link rel="stylesheet" type="text/css" href="ui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="ui/themes/icon.css">
+<script type="text/javascript" src="ui/jquery.min.js"></script>
+<script type="text/javascript" src="ui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="ui/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="ui/jquery.serializejson.min.js"></script>
+<script type="text/javascript">
+let method = ""
+$(function(){
+	$('#grid').datagrid({    
+	    url:'cus/list.action',    
+	    columns:[[    
+	        {field:'cust_name',title:'客户名称',width:100},    
+	        {field:'cust_source',title:'客户信息来源',width:100},    
+	        {field:'cust_industry',title:'客户所属行业',width:100},    
+	        {field:'cust_level',title:'客户级别',width:100},    
+	        {field:'cust_linkman',title:'联系人',width:100},    
+	        {field:'cust_phone',title:'固定电话',width:100},
+	        {field:'cust_address',title:'地址',width:100},
+	        {field:'cust_mobile',title:'移动电话',width:100},
+	        {field:'-',title:'操作',width:100,formatter:function(value,row,index){
+	        	let oper = '<a href="javascript:void(0)" onclick="edit('+row.cust_id +')">编辑</a>';
+	        	 oper += ' <a href="javascript:void(0)" onclick="del('+row.cust_id +')">删除</a>';
+	        	 return oper;
+	        }},
+	    ]],
+	    pagination:true,
+	    singleSelect:true,
+	    toolbar: [{
+			iconCls: 'icon-add',
+			text:'新增',
+			handler: function(){
+				method = 'add';
+				$('#formDlg').dialog('open');
+				$('#editForm').form('clear');
+			}
+		},'-',{
+			text:'导出',
+			iconCls: 'icon-excel',
+			handler: function(){alert('帮助按钮')}
+		}]
+
+	}); 
+	
+	
+	$('#formDlg').dialog({
+		title: '编辑',    
+	    width: 300,    
+	    height: 250,    
+	    closed: true,  
+	    modal: true   
+	});
+	
+	$('#btn').bind('click',function(){
+		var data = $('#editForm').serializeJSON();
+		$.ajax({
+			url:'cus/'+ method +'.action',
+			data:data,
+			type:'get',
+			dataType:'text',
+			success:function(rtn){
+				$.messager.alert('消息',rtn,'info',function(){
+					$('#formDlg').dialog('close');
+	    			$('#grid').datagrid('reload');
+	    		});
+			}
+		});
+	});
+	
+	
+	$('#searchBtn').bind('click',function(){
+		let searchData = $('#searchForm').serializeJSON();
+		$('#grid').datagrid('load',searchData);
+		/* $.ajax({
+			url:'cus/list.action',
+			data:searchData,
+			success:function(rtn){
+				$('#grid').datagrid('reload');
+			}
+		}); */
+	});
+});
+
+function del(index){
+	$.messager.confirm('提示', '确认删除？', function(yes){
+		if (yes){
+		    $.ajax({
+		    	url:'cus/delete.action?cust_id='+index,
+		    	dataType:'text',
+		    	type:'post',
+		    	success:function(rtn){
+		    		$.messager.alert('消息',rtn,'info',function(){
+		    			$('#grid').datagrid('reload');
+		    		});
+		    	}
+		    });
+		}
+	});
+}
+
+function edit(index){
+	$('#formDlg').dialog('open');
+	method = 'update';
+	$('#editForm').form('clear');
+	$('#editForm').form('load','cus/edit.action?cust_id='+index);
+}
+</script>
+</head>
+<body>
+<div>
+	<form id="searchForm">
+		<table>
+			<tr>
+				<td>客户名称:</td>
+				<td><input type="text" name="custName"></td>
+				<td>客户信息来源:</td>
+				<td><input class="easyui-combobox" name="custSource"   
+    		data-options="valueField:'dict_id',textField:'dict_item_name',url:'baseDict/getById.action?code=002'" /> 
+    			</td>
+    			<td>客户所属行业:</td>
+				<td><input type="text" name="custIndustry"></td>
+				<td>客户级别:</td>
+				<td><input type="text" name="custLevel"></td>
+				<td><a id="searchBtn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">搜索</a></button>
+			</tr>
+		</table>
+	</form>
+</div>
+<div id="grid"></div>
+<div id="formDlg">
+	<form id="editForm">
+		<input type="hidden" name="cust_id">
+		<table>
+			<tr>
+				<td>客户名称:</td>
+				<td><input type="text" name="cust_name"></td>
+			</tr>
+			<tr>
+				<td>客户信息来源:</td>
+				<td><input type="text" name="cust_source"></td>
+			</tr>
+			<tr>
+				<td>客户所属行业:</td>
+				<td><input type="text" name="cust_industry"></td>
+			</tr>
+			<tr>
+				<td>客户级别:</td>
+				<td><input type="text" name="cust_level"></td>
+			</tr>
+			<tr>
+				<td>地址:</td>
+				<td><input type="text" name="cust_address"></td>
+			</tr>
+			<tr>
+				<td>联系人:</td>
+				<td><input type="text" name="cust_linkman"></td>
+			</tr>
+		</table>
+		<button id="btn" type="button">保存</button>
+	</form>
+</div>
+</body>
+</html>

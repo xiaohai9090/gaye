@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.ssm.crm.mapper.CusMapper">
+	
+	<sql id="where_if_customer">
+		<where>
+			<if test="custName != null and custName !=''">
+				AND c.cust_name like '%${custName}%' 
+			</if>
+			<if test="custSource != null and custSource !=''">
+				AND c.cust_source like '%${custSource}%' 
+			</if>
+			<if test="custIndustry != null and custIndustry != ''">
+				AND c.cust_industry = #{custIndustry } 
+			</if>
+			<if test="custLevel != null and custLevel != ''">
+				AND c.cust_level = #{custLevel } 
+			</if>
+		</where>
+	</sql>
+
+	<select id="getCustomerList" resultType="Customer">
+		select * from customer
+	</select>
+	
+	<select id="cusListPage" parameterType="QueryVo" resultType="Customer">
+		select *,s.dict_item_name,i.dict_item_name,l.dict_item_name from customer c
+		left join base_dict s on c.cust_source= s.dict_id
+		left join base_dict i on c.cust_industry=i.dict_id
+		left join base_dict l on c.cust_level=l.dict_id
+		<include refid="where_if_customer"></include>
+		
+		limit #{start} , #{rows}
+	</select>
+	
+	<select id="getCount" parameterType="QueryVo" resultType="Integer">
+		select count(*) from customer c
+		<include refid="where_if_customer"></include>
+	</select>
+	
+	<delete id="deleteCoustomer" parameterType="Integer">
+		delete from customer
+		<where>
+			cust_id = #{cust_id}
+		</where>
+	</delete>
+	
+	<insert id="addCustomer" parameterType="Customer">
+		insert into customer (
+			cust_name,cust_source,cust_industry,cust_level,cust_address,cust_createtime
+		) values(
+			#{cust_name},#{cust_source},#{cust_industry},#{cust_level},#{cust_address},#{cust_createtime}
+		)
+	</insert>
+	
+	<select id="queryCustomerById" parameterType="Integer" resultType="Customer">
+		select * from customer where cust_id = #{cust_id}
+	</select>
+	
+	<update id="updateCustomer" parameterType="Customer">
+		update customer 
+		<set>
+			<if test="cust_name != null and cust_name != '' ">
+				cust_name = #{cust_name},
+			</if>
+			<if test="cust_source != null and cust_source != '' ">
+				cust_source = #{cust_source},
+			</if>
+			<if test="cust_industry != null and cust_industry != '' ">
+				cust_industry = #{cust_industry}, 
+			</if>
+			<if test="cust_level != null and cust_level != '' ">
+				cust_level = #{cust_level},
+			</if>
+			<if test="cust_address != null and cust_address != '' ">
+				cust_address = #{cust_address}
+			</if>
+			<where>
+				cust_id=#{cust_id}
+			</where> 
+		</set>
+	</update>
+</mapper>

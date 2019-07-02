@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>转账管理</title>
+<script type="text/javascript" src="ui/jquery.min.js"></script>
+<script type="text/javascript">
+	function payMoney(){
+		let formData = $('#moneyForm').serialize();
+		$.ajax({
+			url:'bank/payMoney.action',
+			data:formData,
+			success:function(rtn){
+				alert(rtn);
+			}
+		});
+	}
+</script>
+</head>
+<body>
+
+<form id="moneyForm">
+	<table>
+		<tr>
+			<td><input type="text" name="card_id1">
+			<td><input type="text" name="card_id2">
+			<td><input type="text" name="money">
+			<td><button type="button" onclick="payMoney()">转账</button>
+		</tr>
+	</table>
+</form>
+</body>
+</html>
